@@ -38,3 +38,6 @@ exports.regionCodes = {
   Australia: 'AU',
   Japan: 'JP',
 };
+
+exports.nearbyRegions = {};
+// if the user is in Japan, look in the American west coast & Australia

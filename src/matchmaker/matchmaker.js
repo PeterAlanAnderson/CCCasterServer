@@ -20,8 +20,11 @@ class Matchmaker {
     this.handlePingResult = this.handlePingResult.bind(this);
     this.handleDumpQueue = this.handleDumpQueue.bind(this);
     this.handlePortIsOpen = this.handlePortIsOpen.bind(this);
-    this.evaluateOpponentPingResult = this.evaluateOpponentPingResult.bind(this);
+    this.evaluateOpponentPingResult = this.evaluateOpponentPingResult.bind(
+      this
+    );
     this.handleDisconnect = this.handleDisconnect.bind(this);
+    this.maxTimesChecked = 1;
   }
   createMatcherID() {
     return idMaker.next();
@@ -32,6 +35,7 @@ class Matchmaker {
     ws.matcherID = matcherID;
     ws.badMatchers = [];
     ws.isMatchedWith = undefined;
+    ws.timesCheckedIn = 0;
 
     console.log(`NEW MATCHER - matcherID is ${ws.matcherID}`);
     const respObj = {
@@ -67,7 +71,9 @@ class Matchmaker {
       address: host._socket.remoteAddress,
       port: parsedMessage.port,
     };
-    this.queue[host.regionCode][host.isMatchedWith].send(JSON.stringify(message));
+    this.queue[host.regionCode][host.isMatchedWith].send(
+      JSON.stringify(message)
+    );
   }
 
   handleDumpQueue(req, res) {
@@ -109,12 +115,18 @@ class Matchmaker {
 
   evaluateOpponentPingResult(parsedMessage, host) {
     console.log(parsedMessage);
-    const opponent = this.queue[host.regionCode][parsedMessage.matchers[0].matcherID];
+    const opponent = this.queue[host.regionCode][
+      parsedMessage.matchers[0].matcherID
+    ];
     console.log('in evaluate ping');
     console.log(parsedMessage.matchers[0].ping);
     console.log(host.isMatchedWith);
     console.log(opponent.isMatchedWith);
-    if (parsedMessage.matchers[0].ping <= this.maxPing && !host.isMatchedWith && !opponent.isMatchedWith) {
+    if (
+      parsedMessage.matchers[0].ping <= this.maxPing &&
+      !host.isMatchedWith &&
+      !opponent.isMatchedWith
+    ) {
       console.log('valid match given ping');
       host.isMatchedWith = opponent.matcherID;
       opponent.isMatchedWith = host.matcherID;
@@ -139,8 +151,16 @@ class Matchmaker {
     let i = 0;
     while (!opponent && i < matcherIDs.length) {
       const matcher = this.queue[host.regionCode][matcherIDs[i]];
-      console.log('SELECT PLAYER TO TEST FOR', host.matcherID, matcher.matcherID);
-      if (!host.badMatchers.includes(matcherIDs[i]) && !matcher.isMatchedWith && matcher.matcherID !== host.matcherID) {
+      console.log(
+        'SELECT PLAYER TO TEST FOR',
+        host.matcherID,
+        matcher.matcherID
+      );
+      if (
+        !host.badMatchers.includes(matcherIDs[i]) &&
+        !matcher.isMatchedWith &&
+        matcher.matcherID !== host.matcherID
+      ) {
         console.log('SELECT PLAYER TO TEST - FOUND');
         opponent = matcher;
       }
@@ -148,11 +168,19 @@ class Matchmaker {
     }
     if (!opponent) {
       console.log('NO OPPONENT FOR', host.matcherID);
-      const message = {
-        eventType: 'noOpponents',
-      };
-      host.send(JSON.stringify(message));
-      setTimeout(() => this.selectPlayerToTest(host), 10000);
+      // increment timesCheckedIn
+      host.timesCheckedIn++;
+      // if timesCheckedIn >= maxTimesCheckedIn
+      if (host.timesCheckedIn >= this.maxTimesChecked) {
+        // call a function that looks for players in other queues to ping test
+        this.selectAlternateQueue(host);
+      } else {
+        const message = {
+          eventType: 'noOpponents',
+        };
+        host.send(JSON.stringify(message));
+        setTimeout(() => this.selectPlayerToTest(host), 10000);
+      }
     } else if (!host.isMatchedWith) {
       const message = {
         eventType: 'pingTest',
@@ -166,6 +194,10 @@ class Matchmaker {
       console.log('SELECT PLAYER TO TEST - SENDING TO', host.matcherID);
       host.send(JSON.stringify(message));
     }
+  }
+
+  selectAlternateQueue(host) {
+    console.log('CHECK ALTERNATE QUEUES');
   }
 }
 
