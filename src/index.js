@@ -3,6 +3,7 @@ const express = require('express');
 const WebSocket = require('ws');
 const Matchmaker = require('./matchmaker/matchmaker');
 const RoutesController = require('./routes');
+const cors = require('cors');
 const log = require('./common/utils/logger');
 
 const port = process.env.PORT || 3030;
@@ -14,6 +15,7 @@ const server = require('http').createServer(app);
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('src/client/build'));
 }
+app.use(cors());
 
 const wss = new WebSocket.Server({ server });
 

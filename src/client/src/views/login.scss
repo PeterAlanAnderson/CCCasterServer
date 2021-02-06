@@ -1,0 +1,13 @@
+@import 'variables';
+
+.login-container {
+  background-color: $background-color;
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  margin-top: 10%;
+  color: #ffffff;
+}

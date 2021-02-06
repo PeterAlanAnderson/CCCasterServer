@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const { authenticateUser } = require('./services/authService');
 
 class RoutesController {
   constructor() {
@@ -17,6 +18,15 @@ class RoutesController {
 
   proxyRoutes() {
     this.router.get('/dump-queues/', this.matchmaker.handleDumpQueue);
+
+    this.router.post(
+      '/loginuser',
+      bodyParser.json({
+        limit: '1024kb',
+        type: 'application/json',
+      }),
+      authenticateUser
+    );
 
     this.wss.on('connection', (ws) => {
       this.matchmaker.handleJoinQueue(ws);
