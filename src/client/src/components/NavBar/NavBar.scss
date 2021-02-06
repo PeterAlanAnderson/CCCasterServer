@@ -1,0 +1,29 @@
+// @import 'variables';
+
+nav {
+  background-color: #000;
+}
+
+.navigation-text {
+  color: #fff !important;
+  //   Will need to investigate why the font wont change
+  font-family: 'Microsoft New Tai Lue', sans-serif !important;
+}
+
+.navigation-text:hover {
+  color: red !important;
+}
+
+.navbar-brand {
+  font-size: 60px;
+  font-family: 'Microsoft New Tai Lue', sans-serif !important;
+  color: #fff !important;
+}
+
+.navbar-link {
+  font-size: 18px;
+}
+
+.dropdown {
+  color: #fff !important;
+}

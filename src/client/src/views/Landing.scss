@@ -1,0 +1,39 @@
+@import 'variables';
+
+body {
+  background-color: $background-color;
+}
+
+.landing-container {
+  color: $white;
+  margin: auto;
+  //   viewheight works on all browsers except opera mini.
+}
+
+.landing-button {
+  background-color: $white;
+  color: #000;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.landing-text {
+  font-size: 24px;
+  font-family: $main-typeface;
+  margin: auto;
+  width: 50%;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+button {
+  border: none !important;
+}
+
+button:hover {
+  background-color: red !important;
+  border: none;
+}
