@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import NavBar from './components/NavBar/NavBar';
+import Footer from './components/Footer/Footer';
 import Landing from './views/Landing';
 import Home from './views/Home';
 import Login from './views/login';
@@ -20,6 +21,7 @@ function App() {
         </Switch>
         <Route path='/home' component={Home} />
         <Route path='/login' component={Login} />
+        <Footer />
       </Router>
     </div>
   );
