@@ -5,17 +5,13 @@ const Footer = () => {
   return (
     <footer>
       <ul className='footer d-flex justify-content-center'>
-        {/* Replace with Patreon icon */}
+        {/* Update link with Patreon Account */}
         <li>
-          <a
-            href='http://github.com/TomOverland'
-            target='_blank'
-            rel='noreferrer'
-          >
+          <a href='#' target='_blank' rel='noreferrer'>
             <i className='fab fa-patreon'></i>
           </a>
         </li>
-        {/* Replace with Ko-fi icon */}
+        {/* Update link with Ko-Fi Account, use Ko-fi logo */}
         <li>
           <a href='#' target='_blank' rel='noreferrer'>
             <i className='fa fa-coffee'></i>

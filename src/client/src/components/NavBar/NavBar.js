@@ -8,7 +8,7 @@ const NavBar = () => {
     <div>
       <Navbar className='navigation-bar font-family' variant='dark' expand='lg'>
         <Nav className='nav-brand'>
-          <Navbar.Brand href='/' className='nav-brand'>
+          <Navbar.Brand href='/' className='nav-brand navbar-brand'>
             Melty Connect
           </Navbar.Brand>
         </Nav>
