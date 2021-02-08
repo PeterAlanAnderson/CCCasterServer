@@ -1,0 +1,58 @@
+@import 'variables';
+
+body {
+  background-color: $background-color;
+}
+
+.landing-container {
+  color: $white;
+  margin: auto;
+  max-width: 800px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.landing-button {
+  background-color: $white;
+  color: #000;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px;
+  margin-top: 70px;
+  @media (min-width: $breakpoint-mobile) {
+    padding-left: 3.5vw;
+    padding-right: 3.5vw;
+    padding-top: 1vw;
+    padding-bottom: 1vw;
+  }
+  @media (min-width: $breakpoint-xl) {
+    padding-left: 55px;
+    padding-right: 55px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  a {
+    color: $black;
+  }
+}
+
+.landing-text {
+  font-size: 24px;
+  font-family: $main-typeface;
+  display: inline-block;
+  max-width: 600px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+button {
+  border: none !important;
+}
+
+button:hover {
+  background-color: red !important;
+  border: none;
+}

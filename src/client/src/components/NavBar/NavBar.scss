@@ -1,0 +1,45 @@
+@import '../../views/variables';
+
+nav {
+  background-color: #000;
+  height: 130px;
+}
+
+.navigation-text {
+  color: #fff !important;
+  //   Will need to investigate why the font wont change
+  font-family: $main-typeface;
+}
+
+.navigation-text:hover {
+  color: red !important;
+}
+
+.navbar-brand {
+  font-size: 60px;
+  font-family: $main-typeface;
+  font-weight: 600;
+  margin-left: 15vw;
+  filter: drop-shadow(0, 0, 4px, $black);
+  margin-top: 20px;
+}
+
+.logo-melty {
+  color: #b40202;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: white;
+}
+
+.logo-connect {
+  color: white;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: white;
+}
+
+.navbar-link {
+  font-size: 18px;
+}
+
+.dropdown {
+  color: #fff !important;
+}
