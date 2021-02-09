@@ -81,7 +81,9 @@ class Matchmaker {
 
   handleDisconnect(ws) {
     console.log('Deleting user', ws.matcherID);
-    delete this.queue[ws.regionCode][ws.matcherID];
+    if (ws.regionCode) {
+      delete this.queue[ws.regionCode][ws.matcherID];
+    }
   }
 
   handleGeolocationResponse(parsedMessage, ws) {
