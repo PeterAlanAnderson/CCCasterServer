@@ -6,6 +6,7 @@ class Matcher {
     this.isConnected = true;
     this.badMatchIDs = [];
     this.isMatchedWith;
+    // this.exhaustedQueue = 0;
   }
 
   getIpAddress() {

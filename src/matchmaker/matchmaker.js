@@ -1,4 +1,5 @@
 const Ids = require('ids');
+const { forEach } = require('lodash');
 const idMaker = new Ids();
 // const auth = require('../common/constants/dev-config');
 const _ = require('lodash');
@@ -24,7 +25,7 @@ class Matchmaker {
       this
     );
     this.handleDisconnect = this.handleDisconnect.bind(this);
-    this.maxTimesChecked = 1;
+    // this.exhaustedQueue = 0;
   }
   createMatcherID() {
     return idMaker.next();
@@ -35,7 +36,7 @@ class Matchmaker {
     ws.matcherID = matcherID;
     ws.badMatchers = [];
     ws.isMatchedWith = undefined;
-    ws.timesCheckedIn = 0;
+    ws.exhaustedQueue = 0;
 
     console.log(`NEW MATCHER - matcherID is ${ws.matcherID}`);
     const respObj = {
@@ -122,6 +123,7 @@ class Matchmaker {
     console.log(parsedMessage.matchers[0].ping);
     console.log(host.isMatchedWith);
     console.log(opponent.isMatchedWith);
+    console.log("exhaustedQueue", host.exhaustedQueue);
     if (
       parsedMessage.matchers[0].ping <= this.maxPing &&
       !host.isMatchedWith &&
@@ -132,6 +134,11 @@ class Matchmaker {
       opponent.isMatchedWith = host.matcherID;
       this.sendOpenPort(host);
     } else {
+      // const badMatcherObject = {matcher ID, ping}
+      const badMatcherObject = { badMatcherId: opponent.matcherID, pingResult: parsedMessage.matchers[0].ping }
+      // host.badMatchers.push(parsedMessage.matchers[0].matcherID)
+      host.badMatchers.push(badMatcherObject);
+      console.log('PUSHED badMatchers', host.badMatchers);
       this.selectPlayerToTest(host);
     }
   }
@@ -157,7 +164,9 @@ class Matchmaker {
         matcher.matcherID
       );
       if (
-        !host.badMatchers.includes(matcherIDs[i]) &&
+        !host.badMatchers.some(badMatcher => (
+          matcher.matcherID === badMatcher.badMatcherId
+        )) &&
         !matcher.isMatchedWith &&
         matcher.matcherID !== host.matcherID
       ) {
@@ -167,20 +176,17 @@ class Matchmaker {
       i++;
     }
     if (!opponent) {
-      console.log('NO OPPONENT FOR', host.matcherID);
-      // increment timesCheckedIn
-      host.timesCheckedIn++;
-      // if timesCheckedIn >= maxTimesCheckedIn
-      if (host.timesCheckedIn >= this.maxTimesChecked) {
-        // call a function that looks for players in other queues to ping test
-        this.selectAlternateQueue(host);
-      } else {
-        const message = {
-          eventType: 'noOpponents',
-        };
-        host.send(JSON.stringify(message));
-        setTimeout(() => this.selectPlayerToTest(host), 10000);
-      }
+      console.log('NO OPPONENT FOR', host.matcherID, 'badMatchersArr', host.badMatchers);
+      host.exhaustedQueue++;
+      host.badMatchers.length === 0 ? this.selectAlternateQueue(host) : this.selectBadMatcher(host);
+      // } else {
+      //   const message = {
+      //     eventType: 'noOpponents',
+      //   };
+      //   host.send(JSON.stringify(message));
+        
+      //   this.selectPlayerToTest(host);
+      // }
     } else if (!host.isMatchedWith) {
       const message = {
         eventType: 'pingTest',
@@ -197,7 +203,43 @@ class Matchmaker {
   }
 
   selectAlternateQueue(host) {
-    console.log('CHECK ALTERNATE QUEUES');
+    console.log('CHECK ALTERNATE QUEUES')
+  
+  }
+
+  selectBadMatcher(host) {
+    console.log('SELECT A BAD MATCHER')
+    // look in badMatchers for lowest ping result that also has no matcher
+    // let lowestPingOpponent {}, for each, if ping lower than 2000, set as current lowest
+    let lowestPingOpponent = { 
+      badMatcherID: 'null', 
+      pingResult: 2000
+    };
+    host.badMatchers.forEach(badMatcher => { 
+      if (
+        badMatcher.pingResult < lowestPingOpponent.pingResult &&
+        !this.queue[host.regionCode][badMatcher.badMatcherID].isMatchedWith
+        ) {
+         lowestPingOpponent = badMatcher;
+        }
+      })
+    console.log ('LOWEST BAD PING', lowestPingOpponent);
+    // set as each others opponents - (make a separate function)
+    if(!lowestPingOpponent.badMatcherId == 'null') {
+      this.setOpponents(host, lowestPingOpponent);
+      // else, if no viable matcher, send to alt queue
+    } else {
+      this.selectAlternateQueue(host);
+    }
+    
+    
+  }
+
+  setOpponents(host, opponent) {
+    console.log('INSIDE SET OPPONENTS')
+    host.isMatchedWith = lowestPingOpponent.badMatcherId;
+    opponent.isMatchedWith = host.matcherID;
+
   }
 }
 
