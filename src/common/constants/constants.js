@@ -38,3 +38,15 @@ exports.regionCodes = {
   Australia: 'AU',
   Japan: 'JP',
 };
+
+// exports.nearbyRegions = {
+//   : ['NW', 'AU'],
+
+// };
+// if the user is in Japan, look in the American west coast & Australia
+// if the user is in Australia, look in Japan and ME
+// if the user is in ME, look in EU
+// if the user is in EU, look in ME and NE
+// if the user is in SA, look in NW and NE
+// if the user is in NE, look in NW and EU
+// if the user is in NW, look in NE and Japan

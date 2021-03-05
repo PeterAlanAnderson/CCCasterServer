@@ -8,7 +8,7 @@ Put this link into the "URL" box and hit "Open":
 
 ws://fierce-lowlands-57630.herokuapp.com/
 
-WSS messages that contain JSON objects must stringify the obejct first.
+WSS messages that contain JSON objects must stringify the object first.
 
 Here is a JSON stringifier utility:
 
@@ -38,7 +38,7 @@ Stringified JSON message for geolocation ping test result:
 "{\"eventType\":\"pingTestResponse\",\"matchers\":[{\"matcherID\":\"NorthAmericaWest\",\"pingResult\":100},{\"matcherID\":\"NorthAmericaEast\",\"pingResult\":120},{\"matcherID\":\"Australia\",\"pingResult\":130}]}"
 ```
 
-To use the above, cahnge whichever region you want to be sorted into to the lowest ping number.
+To use the above, change whichever region you want to be sorted into to the lowest ping number.
 
 Stringified JSON message for normal ping test result:
 
