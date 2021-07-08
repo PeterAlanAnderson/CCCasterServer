@@ -22,6 +22,7 @@ class Matchmaker {
     this.handlePortIsOpen = this.handlePortIsOpen.bind(this);
     this.evaluateOpponentPingResult = this.evaluateOpponentPingResult.bind(this);
     this.handleDisconnect = this.handleDisconnect.bind(this);
+    this.handleIpAddress = this.handleIpAddress.bind(this);
   }
   createMatcherID() {
     return idMaker.next();
@@ -34,11 +35,17 @@ class Matchmaker {
     ws.isMatchedWith = undefined;
 
     console.log(`NEW MATCHER - matcherID is ${ws.matcherID}`);
-    const respObj = {
-      eventType: 'pingTest',
-      matchers: constants.geolocationIps,
-    };
-    ws.send(JSON.stringify(respObj));
+    // const respObj = {
+    //   eventType: 'pingTest',
+    //   matchers: constants.geolocationIps,
+    // };
+    // ws.send(JSON.stringify(respObj));
+  }
+
+  handleIpAddress(ws, parsedMessage) {
+    console.log("HANDLE IP ADDRESS", parsedMessage)
+    ws.ipAddress = parsedMessage.ipAddress;
+    this.sendGeolocationRequest(ws);
   }
 
   handlePingResult(ws, parsedMessage) {
@@ -64,7 +71,7 @@ class Matchmaker {
   handlePortIsOpen(host, parsedMessage) {
     const message = {
       eventType: 'joinMatch',
-      address: host._socket.remoteAddress,
+      address: host.ipAddress,
       port: parsedMessage.port,
     };
     this.queue[host.regionCode][host.isMatchedWith].send(JSON.stringify(message));
@@ -77,6 +84,14 @@ class Matchmaker {
     // res.status(403);
     // res.json('Error: Forbidden');
     // }
+  }
+
+  sendGeolocationRequest(ws) {
+    const respObj = {
+      eventType: 'pingTest',
+      matchers: constants.geolocationIps,
+    };
+    ws.send(JSON.stringify(respObj));
   }
 
   handleDisconnect(ws) {
@@ -161,7 +176,7 @@ class Matchmaker {
         matchers: [
           {
             matcherID: opponent.matcherID,
-            address: opponent._socket.remoteAddress,
+            address: opponent.ipAddress,
           },
         ],
       };

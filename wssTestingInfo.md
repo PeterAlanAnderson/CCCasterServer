@@ -30,6 +30,8 @@ Use Postman to see the contents of the queue with the /dump-queues/ route.
 
 No body/message is needed for this. Just start the connection and the geolocation matcher data comes back.
 
+"{\"eventType\":\"ipAddress\",\"ipAddress\":\"12345\"}"
+
 ## Ping Test Result
 
 Stringified JSON message for geolocation ping test result:
