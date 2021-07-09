@@ -22,6 +22,7 @@ class Matchmaker {
     this.handlePortIsOpen = this.handlePortIsOpen.bind(this);
     this.evaluateOpponentPingResult = this.evaluateOpponentPingResult.bind(this);
     this.handleDisconnect = this.handleDisconnect.bind(this);
+    this.handleInitialConfig = this.handleInitialConfig.bind(this);
   }
   createMatcherID() {
     return idMaker.next();
@@ -34,21 +35,33 @@ class Matchmaker {
     ws.isMatchedWith = undefined;
 
     console.log(`NEW MATCHER - matcherID is ${ws.matcherID}`);
-    const respObj = {
-      eventType: 'pingTest',
-      matchers: constants.geolocationIps,
-    };
-    ws.send(JSON.stringify(respObj));
+    // const respObj = {
+    //   eventType: 'pingTest',
+    //   matchers: constants.geolocationIps,
+    // };
+    // ws.send(JSON.stringify(respObj));
+  }
+
+  handleInitialConfig(ws, parsedMessage) {
+    console.log("HANDLE IP ADDRESS", parsedMessage)
+    ws.ipAddress = parsedMessage.ipAddress;
+    ws.regionCode = constants.regionCodes[parsedMessage.region];
+    console.log("event1")
+    this.queue[ws.regionCode][ws.matcherID] = ws;
+    console.log("event2")
+    
+    this.selectPlayerToTest(ws);
+    // this.sendGeolocationRequest(ws);
   }
 
   handlePingResult(ws, parsedMessage) {
     console.log('in handle ping result');
-    if (this.isGeolocationResponse(parsedMessage)) {
-      console.log('is geolocation response');
-      this.handleGeolocationResponse(parsedMessage, ws);
-      this.selectPlayerToTest(ws);
-    } else {
-      console.log('is not geolocation response');
+    // if (this.isGeolocationResponse(parsedMessage)) {
+    //   console.log('is geolocation response');
+    //   this.handleGeolocationResponse(parsedMessage, ws);
+    //   this.selectPlayerToTest(ws);
+    // } else {
+    //   console.log('is not geolocation response');
       const opponent = this.queue[ws.regionCode][ws.matcherID].isMatchedWith;
       if (opponent) {
         console.log('IN HANDLE PING RESULT - PLAYER HAS BEEN CLAIMED');
@@ -59,13 +72,12 @@ class Matchmaker {
       // Ping Comparison Function work goes here
       this.evaluateOpponentPingResult(parsedMessage, ws);
     }
-  }
+  
 
   handlePortIsOpen(host, parsedMessage) {
     const message = {
       eventType: 'joinMatch',
-      address: host._socket.remoteAddress,
-      port: parsedMessage.port,
+      address: host.ipAddress,
     };
     this.queue[host.regionCode][host.isMatchedWith].send(JSON.stringify(message));
   }
@@ -77,6 +89,14 @@ class Matchmaker {
     // res.status(403);
     // res.json('Error: Forbidden');
     // }
+  }
+
+  sendGeolocationRequest(ws) {
+    const respObj = {
+      eventType: 'pingTest',
+      matchers: constants.geolocationIps,
+    };
+    ws.send(JSON.stringify(respObj));
   }
 
   handleDisconnect(ws) {
@@ -111,12 +131,12 @@ class Matchmaker {
 
   evaluateOpponentPingResult(parsedMessage, host) {
     console.log(parsedMessage);
-    const opponent = this.queue[host.regionCode][parsedMessage.matchers[0].matcherID];
+    const opponent = this.queue[host.regionCode][parsedMessage.matcherID];
     console.log('in evaluate ping');
-    console.log(parsedMessage.matchers[0].ping);
+    console.log(parsedMessage.ping);
     console.log(host.isMatchedWith);
     console.log(opponent.isMatchedWith);
-    if (parsedMessage.matchers[0].ping <= this.maxPing && !host.isMatchedWith && !opponent.isMatchedWith) {
+    if (parsedMessage.ping <= this.maxPing && !host.isMatchedWith && !opponent.isMatchedWith) {
       console.log('valid match given ping');
       host.isMatchedWith = opponent.matcherID;
       opponent.isMatchedWith = host.matcherID;
@@ -158,12 +178,8 @@ class Matchmaker {
     } else if (!host.isMatchedWith) {
       const message = {
         eventType: 'pingTest',
-        matchers: [
-          {
-            matcherID: opponent.matcherID,
-            address: opponent._socket.remoteAddress,
-          },
-        ],
+        matcherID: opponent.matcherID,
+        address: opponent.ipAddress,
       };
       console.log('SELECT PLAYER TO TEST - SENDING TO', host.matcherID);
       host.send(JSON.stringify(message));

@@ -10,17 +10,13 @@ Websocket messages should be stringified JSON objects that contain an eventType 
 
 ## **pingTest**
 
-### Contains an array of IP addresses and their corresponding matcherIDs for the client to ping test against.
+### Contains an IP addresse and its corresponding matcherID for the client to ping test against.
 
 ```
 {
     eventType: 'pingTest',
-    matchers: [
-        {
-        matcherID: string,
-        address: string
-        }
-    ]
+    matcherID: string,
+    address: string
 }
 ```
 
@@ -36,13 +32,12 @@ Websocket messages should be stringified JSON objects that contain an eventType 
 
 ## **joinMatch**
 
-### Instructs the client to join a waiting host. Contains the hosts IP address and port.
+### Instructs the client to join a waiting host. Contains the host's IP address with appended port.
 
 ```
 {
     eventType: 'joinMatch',
     address: string,
-    port: string
 }
 ```
 
@@ -66,12 +61,8 @@ Websocket messages should be stringified JSON objects that contain an eventType 
 
 {
 eventType: 'pingTestResponse',
-matchers: [
-{
 matcherID: string,
 ping: string
-}
-]
 }
 
 ```
@@ -83,8 +74,7 @@ ping: string
 ```
 
 {
-eventType: 'portIsOpen',
-port: string
+eventType: 'portIsOpen'
 }
 
 ```
