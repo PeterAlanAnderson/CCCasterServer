@@ -72,7 +72,6 @@ class Matchmaker {
     const message = {
       eventType: 'joinMatch',
       address: host.ipAddress,
-      port: parsedMessage.port,
     };
     this.queue[host.regionCode][host.isMatchedWith].send(JSON.stringify(message));
   }
