@@ -28,26 +28,22 @@ Use Postman to see the contents of the queue with the /dump-queues/ route.
 
 ## Join Queue/Connection start
 
-No body/message is needed for this. Just start the connection and the geolocation matcher data comes back.
+After initializing the connection, an initialConfig event message must be sent within 60 seconds.
 
-"{\"eventType\":\"ipAddress\",\"ipAddress\":\"12345\"}"
-
+```
 "{\"eventType\":\"initialConfig\",\"ipAddress\":\"12345\",\"region\":\"NorthAmericaWest\"}"
+```
+
+The server will respond with a "no opponents" message or an opponent to ping test every 10 seconds.
+
+---
 
 ## Ping Test Result
 
-Stringified JSON message for geolocation ping test result:
+Stringified JSON message for ping test result:
 
 ```
-"{\"eventType\":\"pingTestResponse\",\"matchers\":[{\"matcherID\":\"NorthAmericaWest\",\"pingResult\":100},{\"matcherID\":\"NorthAmericaEast\",\"pingResult\":120},{\"matcherID\":\"Australia\",\"pingResult\":130}]}"
-```
-
-To use the above, cahnge whichever region you want to be sorted into to the lowest ping number.
-
-Stringified JSON message for normal ping test result:
-
-```
-"{\"eventType\":\"pingTestResponse\",\"matchers\":[{\"matcherID\":\"MatcherID\",\"ping\":100}]}"
+"{\"eventType\":\"pingTestResponse\",\"matcherID\":\"afel5kdkm0kes1ff6r9p10qju\",\"ping\":\"5\"}"
 ```
 
 To use this, connect at least 2 WS connections, run the /dump-queues/ route in Postman, then paste a matcherID that is not assigned to the WS connection you're using into the matcherID.
@@ -55,5 +51,5 @@ To use this, connect at least 2 WS connections, run the /dump-queues/ route in P
 If pingResult is below 126, the connection process will start. If above 126, a new matcher should be sent back.
 
 ```
-"{\"eventType\":\"portIsOpen\",\"port\":12345}"
+"{\"eventType\":\"portIsOpen\"}"
 ```
