@@ -45,8 +45,8 @@ class RoutesController {
         console.log(parsedMessage);
         try {
           switch (parsedMessage.eventType) {
-            case 'ipAddress':
-              this.matchmaker.handleIpAddress(ws, parsedMessage);
+            case 'initialConfig':
+              this.matchmaker.handleInitialConfig(ws, parsedMessage);
               break;
             case 'pingTestResponse':
               this.matchmaker.handlePingResult(ws, parsedMessage);

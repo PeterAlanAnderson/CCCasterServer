@@ -32,6 +32,8 @@ No body/message is needed for this. Just start the connection and the geolocatio
 
 "{\"eventType\":\"ipAddress\",\"ipAddress\":\"12345\"}"
 
+"{\"eventType\":\"initialConfig\",\"ipAddress\":\"12345\",\"region\":\"NorthAmericaWest\"}"
+
 ## Ping Test Result
 
 Stringified JSON message for geolocation ping test result:
